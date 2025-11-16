@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Auto Reloader</title>
+    <link rel="stylesheet" type="text/css" href="popup.css" />
+  </head>
+  <body>
+    <h1>Auto Reloader</h1>
+    <div class="input-group">
+      <label for="interval">Reload every:</label>
+      <input type="number" id="interval" value="10" min="1" />
+      <span>seconds</span>
+    </div>
+    <div class="button-group">
+      <button id="start">Start</button>
+      <button id="stop">Stop</button>
+    </div>
+    <div id="countdown"></div>
+    <script src="popup.js"></script>
+  </body>
+</html>
