@@ -119,9 +119,38 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // --- Manage View Functions ---
-  const buildManageView = async () => {
+  const cleanupZombieTimers = async () => {
     const { timers } = await chrome.storage.local.get("timers");
-    const tabs = await chrome.tabs.query({});
+    if (!timers || Object.keys(timers).length === 0) return;
+
+    const tabs = await chrome.tabs.query({
+      windowId: chrome.windows.WINDOW_ID_CURRENT,
+    });
+    const existingTabIds = new Set(tabs.map((tab) => tab.id));
+
+    let hasChanges = false;
+    for (const tabIdStr in timers) {
+      const tabId = parseInt(tabIdStr, 10);
+      if (!existingTabIds.has(tabId)) {
+        // Tab doesn't exist, remove it
+        delete timers[tabId];
+        hasChanges = true;
+        console.log(`Cleaned up zombie timer for tab ${tabId}`);
+      }
+    }
+
+    if (hasChanges) {
+      await chrome.storage.local.set({ timers: timers });
+    }
+  };
+
+  const buildManageView = async () => {
+    await cleanupZombieTimers(); // Clean up before building view
+
+    const { timers } = await chrome.storage.local.get("timers");
+    const tabs = await chrome.tabs.query({
+      windowId: chrome.windows.WINDOW_ID_CURRENT,
+    });
     const tabsById = Object.fromEntries(tabs.map((tab) => [tab.id, tab]));
 
     timersListDiv.innerHTML = ""; // Clear previous list
@@ -136,7 +165,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const timer = timers[tabId];
       const tab = tabsById[tabId];
 
-      if (!tab) continue; // Skip timers for closed tabs
+      if (!tab) continue; // Skip timers for closed tabs or tabs in other windows
 
       const item = document.createElement("div");
       item.className = `timer-item ${
@@ -145,7 +174,7 @@ document.addEventListener("DOMContentLoaded", () => {
       item.innerHTML = `
         <div class="timer-item-info">
           <img src="${tab.favIconUrl || "images/icon16.png"}" alt="favicon">
-          <span>${tab.title}</span>
+          <span>${tab.title || "Unknown Tab"}</span>
         </div>
         <div class="timer-item-controls">
           <button data-tab-id="${tabId}" class="js-open-tab-btn" title="Open Tab">
@@ -160,6 +189,9 @@ document.addEventListener("DOMContentLoaded", () => {
         timer.isActive ? "flex" : "none"
       }">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12"></rect></svg>
+          </button>
+          <button data-tab-id="${tabId}" class="js-remove-btn" title="Remove Timer">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
           </button>
         </div>
       `;
@@ -196,6 +228,16 @@ document.addEventListener("DOMContentLoaded", () => {
         const tabId = parseInt(e.currentTarget.dataset.tabId, 10);
         chrome.runtime.sendMessage(
           { command: "stop", tabId: tabId },
+          buildManageView
+        );
+      });
+    });
+
+    document.querySelectorAll(".js-remove-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const tabId = parseInt(e.currentTarget.dataset.tabId, 10);
+        chrome.runtime.sendMessage(
+          { command: "remove", tabId: tabId },
           buildManageView
         );
       });
