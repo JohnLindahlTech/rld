@@ -6,43 +6,58 @@
   </head>
   <body>
     <div class="container">
-      <h1>RLD+</h1>
-      <p>Set reload interval:</p>
-      <div class="presets">
-        <button class="preset-btn" data-seconds="10">10s</button>
-        <button class="preset-btn" data-seconds="60">1m</button>
-        <button class="preset-btn" data-seconds="300">5m</button>
-        <button class="preset-btn" data-seconds="600">10m</button>
+      <div class="header">
+        <h1>RLD+</h1>
+        <button id="toggle-view" title="Manage all timers">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+        </button>
       </div>
-      <div class="time-inputs">
-        <div class="input-group">
-          <input type="number" id="hours" min="0" placeholder="0" />
-          <label for="hours">h</label>
+
+      <div id="timer-view">
+        <p>Set reload interval for this tab:</p>
+        <div class="presets">
+          <button class="preset-btn" data-seconds="10">10s</button>
+          <button class="preset-btn" data-seconds="60">1m</button>
+          <button class="preset-btn" data-seconds="300">5m</button>
+          <button class="preset-btn" data-seconds="600">10m</button>
         </div>
-        <div class="input-group">
-          <input type="number" id="minutes" min="0" max="59" placeholder="0" />
-          <label for="minutes">m</label>
+        <div class="time-inputs">
+          <div class="input-group">
+            <input type="number" id="hours" min="0" placeholder="0" />
+            <label for="hours">h</label>
+          </div>
+          <div class="input-group">
+            <input type="number" id="minutes" min="0" max="59" placeholder="0" />
+            <label for="minutes">m</label>
+          </div>
+          <div class="input-group">
+            <input type="number" id="seconds" min="0" max="59" placeholder="10" />
+            <label for="seconds">s</label>
+          </div>
         </div>
-        <div class="input-group">
-          <input type="number" id="seconds" min="0" max="59" placeholder="10" />
-          <label for="seconds">s</label>
+        <div class="options">
+          <div class="option-item">
+            <input type="checkbox" id="hard-refresh" />
+            <label for="hard-refresh">Hard Refresh (bypass cache)</label>
+          </div>
+          <div class="option-item">
+            <input type="checkbox" id="stop-on-click" />
+            <label for="stop-on-click">Stop refreshing if clicking anywhere on the page</label>
+          </div>
+        </div>
+        <div class="button-group">
+          <button id="start" class="btn btn-start">Start</button>
+          <button id="stop" class="btn btn-stop">Stop</button>
+        </div>
+        <div id="status"></div>
+      </div>
+
+      <div id="manage-view" style="display: none;">
+        <p>All timers:</p>
+        <div id="timers-list">
+          <!-- Timer items will be dynamically inserted here -->
         </div>
       </div>
-      <div class="options">
-        <div class="option-item">
-          <input type="checkbox" id="hard-refresh" />
-          <label for="hard-refresh">Hard Refresh (bypass cache)</label>
-        </div>
-        <div class="option-item">
-          <input type="checkbox" id="stop-on-click" />
-          <label for="stop-on-click">Stop refreshing if clicking anywhere on the page</label>
-        </div>
-      </div>
-      <div class="button-group">
-        <button id="start" class="btn btn-start">Start</button>
-        <button id="stop" class="btn btn-stop">Stop</button>
-      </div>
-      <div id="status"></div>
     </div>
     <script src="popup.js"></script>
   </body>

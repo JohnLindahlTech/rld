@@ -17,147 +17,167 @@ function formatBadgeText(seconds) {
 // Listener for messages from the popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.command === 'start') {
-    const intervalInSeconds = request.interval;
-    const nextReloadTime = Date.now() + intervalInSeconds * 1000;
+    const { tabId, settings } = request;
+    
+    chrome.storage.local.get('timers', (result) => {
+      const timers = result.timers || {};
+      
+      // Get existing settings for the tab or create an empty object
+      const existingSettings = timers[tabId] || {};
 
-    // Store interval, reload time, and hard refresh preference
-    chrome.storage.local.set({ 
-      interval: intervalInSeconds, 
-      isReloading: true, 
-      nextReloadTime: nextReloadTime,
-      isHardRefresh: request.isHardRefresh || false,
-      stopOnClick: request.stopOnClick || false
+      // Create or update the timer for this tab
+      timers[tabId] = {
+        ...existingSettings, // Preserve old settings
+        ...settings,         // Overwrite with new settings
+        isActive: true,      // Set timer to active
+        nextReloadTime: Date.now() + settings.interval * 1000,
+      };
+
+      chrome.storage.local.set({ timers: timers });
+
+      if (settings.stopOnClick) {
+        chrome.scripting.executeScript({
+          target: { tabId: tabId },
+          files: ['content.js']
+        }, () => {
+          if (chrome.runtime.lastError) {
+            console.error('Could not inject script: ' + chrome.runtime.lastError.message);
+            return;
+          }
+          chrome.tabs.sendMessage(tabId, { command: 'addClickListener' });
+        });
+      }
+
+      // Set initial badge text and color for the specific tab
+      chrome.action.setBadgeText({ tabId: tabId, text: formatBadgeText(settings.interval) });
+      chrome.action.setBadgeBackgroundColor({ tabId: tabId, color: '#4688F1' });
+
+      // Create a unique alarm for this tab
+      chrome.alarms.create(`countdown-${tabId}`, { periodInMinutes: 1 / 60 });
+      
+      sendResponse({ status: "Countdown started" });
     });
 
-    if (request.stopOnClick) {
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        if (tabs.length > 0) {
-          chrome.scripting.executeScript({
-            target: { tabId: tabs[0].id },
-            files: ['content.js']
-          }, () => {
-            chrome.tabs.sendMessage(tabs[0].id, { command: 'addClickListener' });
-          });
-        }
-      });
-    }
-
-    // Set initial badge text and color
-    chrome.action.setBadgeText({ text: formatBadgeText(intervalInSeconds) });
-    chrome.action.setBadgeBackgroundColor({ color: '#4688F1' }); // Blue
-
-    // Create an alarm that fires every second to update the countdown
-    chrome.alarms.create('countdown', { periodInMinutes: 1 / 60 });
-    
-    sendResponse({ status: "Countdown started" });
+    return true; // Indicate async response
 
   } else if (request.command === 'stop') {
-    chrome.alarms.clear('countdown');
-    chrome.action.setBadgeText({ text: '' });
+    // The tabId can come from the request (from the popup) or the sender (from a content script)
+    const tabId = request.tabId || (sender.tab && sender.tab.id);
+    if (!tabId) return true;
 
-    // This function will be our single point of exit for stopping the reloader.
-    const stopReloading = () => {
-      chrome.storage.local.set({ isReloading: false, nextReloadTime: null }, () => {
-        // The popup expects a response, but a content script click does not provide a sendResponse function.
-        if (sendResponse) {
-          sendResponse({ status: "Countdown stopped" });
+    chrome.storage.local.get('timers', (result) => {
+      const timers = result.timers || {};
+      const timerData = timers[tabId];
+
+      if (timerData) {
+        // Deactivate the timer instead of deleting it
+        timerData.isActive = false;
+        timerData.nextReloadTime = null;
+        timers[tabId] = timerData;
+        chrome.storage.local.set({ timers: timers });
+
+        // Clear the specific alarm for this tab
+        chrome.alarms.clear(`countdown-${tabId}`);
+
+        // Clear the badge for this tab
+        chrome.action.setBadgeText({ tabId: tabId, text: '' });
+
+        // If stopOnClick was active, try to remove the listener
+        if (timerData.stopOnClick) {
+          chrome.tabs.sendMessage(tabId, { command: 'removeClickListener' }, () => {
+            if (chrome.runtime.lastError) {
+              // Expected if the content script is no longer there
+            }
+          });
         }
-      });
-    };
-
-    chrome.storage.local.get('stopOnClick', (data) => {
-      // Only try to remove the listener if the feature was active.
-      if (data.stopOnClick) {
-        // Determine the target tab ID. If the sender has a tab, it's a content script.
-        // Otherwise, it's the popup, so we query for the active tab.
-        const getTabId = new Promise(resolve => {
-          if (sender.tab) {
-            resolve(sender.tab.id);
-          } else {
-            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-              resolve(tabs.length > 0 ? tabs[0].id : null);
-            });
-          }
-        });
-
-        getTabId.then(tabId => {
-          if (tabId) {
-            chrome.tabs.sendMessage(tabId, { command: 'removeClickListener' }, () => {
-              // This callback runs whether the message was received or not.
-              if (chrome.runtime.lastError) {
-                // This error is expected if the content script isn't on the page.
-              }
-              // Once messaging is attempted, proceed to stop the reloader.
-              stopReloading();
-            });
-          } else {
-            // If there's no tab to message, just stop.
-            stopReloading();
-          }
-        });
-      } else {
-        // If the feature wasn't active, just stop.
-        stopReloading();
+      }
+      
+      if (sendResponse) {
+        sendResponse({ status: "Countdown stopped" });
       }
     });
 
-    // Return true to indicate we will respond asynchronously.
-    return true;
+    return true; // Indicate async response
   }
 });
 
 // Listener for the alarm
 chrome.alarms.onAlarm.addListener((alarm) => {
-  if (alarm.name === 'countdown') {
-    chrome.storage.local.get(['nextReloadTime', 'interval', 'isReloading', 'isHardRefresh'], (data) => {
-      if (data.isReloading && data.nextReloadTime) {
-        const remaining = Math.round((data.nextReloadTime - Date.now()) / 1000);
+  if (alarm.name.startsWith('countdown-')) {
+    const tabId = parseInt(alarm.name.split('-')[1], 10);
+
+    chrome.storage.local.get('timers', (result) => {
+      const timers = result.timers || {};
+      const timerData = timers[tabId];
+
+      // Only proceed if a timer exists and it is active
+      if (timerData && timerData.isActive) {
+        const remaining = Math.round((timerData.nextReloadTime - Date.now()) / 1000);
 
         if (remaining > 0) {
-          // Update badge with formatted remaining time
-          chrome.action.setBadgeText({ text: formatBadgeText(remaining) });
+          // Update badge for the specific tab
+          chrome.action.setBadgeText({ tabId: tabId, text: formatBadgeText(remaining) });
         } else {
-          // Time is up, reload the tab
-          chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-            if (tabs.length > 0) {
-              chrome.tabs.reload(tabs[0].id, { bypassCache: data.isHardRefresh || false });
+          // Time is up, check if tab exists and then reload
+          chrome.tabs.get(tabId, (tab) => {
+            if (chrome.runtime.lastError || !tab) {
+              // Tab has been closed, so stop the timer for this tab.
+              console.log(`Tab ${tabId} not found. Stopping reloader.`);
+              delete timers[tabId];
+              chrome.storage.local.set({ timers: timers });
+              chrome.alarms.clear(alarm.name);
+              return;
             }
-          });
 
-          // Reset for the next countdown cycle
-          const newNextReloadTime = Date.now() + data.interval * 1000;
-          chrome.storage.local.set({ nextReloadTime: newNextReloadTime });
-          chrome.action.setBadgeText({ text: formatBadgeText(data.interval) });
+            // Tab exists, reload it
+            chrome.tabs.reload(tabId, { bypassCache: timerData.isHardRefresh || false });
+
+            // Reset for the next countdown cycle
+            timerData.nextReloadTime = Date.now() + timerData.interval * 1000;
+            timers[tabId] = timerData;
+            chrome.storage.local.set({ timers: timers });
+            chrome.action.setBadgeText({ tabId: tabId, text: formatBadgeText(timerData.interval) });
+          });
         }
       }
     });
   }
 });
 
-// Optional: A listener to clear the badge if the user closes the tab
-// or navigates away, to prevent a stale countdown.
+// Listener for tab updates to re-inject content script if necessary
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    if (changeInfo.status === 'complete') {
-        chrome.storage.local.get(['isReloading', 'stopOnClick'], (data) => {
-            if (data.isReloading && data.stopOnClick) {
-                chrome.scripting.executeScript({
-                    target: { tabId: tabId },
-                    files: ['content.js']
-                }, () => {
-                    if (chrome.runtime.lastError) {
-                        console.error('Could not inject script: ' + chrome.runtime.lastError.message);
-                        return;
-                    }
-                    chrome.tabs.sendMessage(tabId, { command: 'addClickListener' });
-                });
-            }
+  if (changeInfo.status === 'complete') {
+    chrome.storage.local.get('timers', (result) => {
+      const timers = result.timers || {};
+      const timerData = timers[tabId];
+      // If a timer is active for this tab and stopOnClick is enabled, re-inject the script
+      if (timerData && timerData.stopOnClick) {
+        chrome.scripting.executeScript({
+          target: { tabId: tabId },
+          files: ['content.js']
+        }, () => {
+          if (chrome.runtime.lastError) {
+            console.error('Could not re-inject script: ' + chrome.runtime.lastError.message);
+            return;
+          }
+          chrome.tabs.sendMessage(tabId, { command: 'addClickListener' });
         });
-    } else if (changeInfo.status === 'loading') {
-        chrome.storage.local.get('isReloading', data => {
-            if(!data.isReloading) {
-                chrome.action.setBadgeText({ text: '' });
-                chrome.alarms.clear('countdown');
-            }
-        });
+      }
+    });
+  }
+});
+
+// Listener for when a tab is closed to clean up its timer
+chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
+  chrome.storage.local.get('timers', (result) => {
+    const timers = result.timers || {};
+    if (timers[tabId]) {
+      console.log(`Tab ${tabId} closed. Removing its timer.`);
+      // Remove the timer from storage
+      delete timers[tabId];
+      chrome.storage.local.set({ timers: timers });
+      // Clear the specific alarm
+      chrome.alarms.clear(`countdown-${tabId}`);
     }
+  });
 });

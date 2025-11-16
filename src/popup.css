@@ -59,7 +59,22 @@ body {
 .container {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+}
+
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  margin-bottom: 16px; /* Space between header and the view below */
+}
+
+#timer-view, #manage-view {
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* Space between elements inside the view */
+  width: 100%;
 }
 
 h1 {
@@ -212,4 +227,100 @@ p {
   min-height: 1.2em;
   text-align: center;
   font-weight: bold;
+}
+
+/* --- Header --- */
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  margin-bottom: 16px; /* Add margin below header to separate from views */
+}
+
+/* --- Timer View --- */
+#timer-view {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* Apply gap within the view */
+}
+
+/* --- Manage View --- */
+#manage-view {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* Apply gap within the view */
+}
+
+#timers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.timer-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.timer-item-info {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.timer-item-info img {
+  width: 16px;
+  height: 16px;
+}
+
+.timer-item-info span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.875rem;
+}
+
+.timer-item-controls {
+  display: flex;
+  gap: 6px;
+}
+
+.timer-item-controls button {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted-foreground);
+}
+
+.timer-item-controls button:hover {
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.timer-item-controls button svg {
+  stroke: currentColor;
+  width: 14px;
+  height: 14px;
+}
+
+.timer-item.is-inactive {
+  opacity: 0.6;
 }
