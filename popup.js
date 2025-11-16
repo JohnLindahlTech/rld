@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
           clearInterval(countdownInterval);
         }
       });
-    }, 1000);
+    }, 250); // Update every 250ms for smoother display
   };
 
   // Function to update the UI based on reloading state
