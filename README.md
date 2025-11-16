@@ -31,3 +31,19 @@ RLD+ is a simple yet powerful Chrome extension designed to automatically reload 
 4.  Click on **Load unpacked**.
 5.  Select the directory where you saved the extension files.
 6.  Pin the RLD+ icon to your toolbar for easy access.
+
+## Deployment
+
+To package the extension for the Chrome Web Store, follow these steps:
+
+1.  **Update Version:** Before creating a new release, manually update the `version` field in `src/manifest.json` to a new, unique version number. The Chrome Web Store requires a higher version for each upload.
+
+2.  **Run Deploy Script:** Run the `deploy.sh` script from the project root. You can use flags to control how the version is incremented.
+
+    *   `./deploy.sh`: (Default) Increments the patch version (e.g., 1.0.0 -> 1.0.1).
+    *   `./deploy.sh --minor`: Increments the minor version (e.g., 1.0.1 -> 1.1.0).
+    *   `./deploy.sh --major`: Increments the major version (e.g., 1.1.0 -> 2.0.0).
+    *   `./deploy.sh --version "x.y.z"`: Sets a specific version.
+    *   `./deploy.sh --no-version`: Packages without changing the version.
+
+3.  **Upload to Store:** The script will generate a `rld-plus-v<version>.zip` file in the project root. Upload this file to the Chrome Web Store Developer Dashboard.
