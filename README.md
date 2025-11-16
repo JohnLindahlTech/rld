@@ -7,12 +7,12 @@ RLD+ is a simple yet powerful Chrome extension designed to automatically reload 
 - **Custom Reload Intervals:** Set any reload interval in seconds.
 - **Visual Countdown:** The extension icon displays a live countdown timer, so you always know when the next reload will occur.
 - **Simple Interface:** An easy-to-use popup to start and stop the reloading process.
-- **Efficient:** Uses Chrome's `alarms` API for reliable and battery-friendly timing.
+- **Dark/Light Mode Support:** Automatically adapts to your system's dark or light mode preference for a seamless visual experience.
 
 ## How to Use
 
 <div style="text-align: center;">
-  <img src="docs/assets/main.png" alt="RLD+ Popup Interface" width="625" height="884" style="max-width: 100%; height: auto;">
+  <img src="docs/assets/main.png" alt="RLD+ Popup Interface" width="625" height="884" style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
 </div>
 
 1.  Click on the RLD+ extension icon in your Chrome toolbar.
