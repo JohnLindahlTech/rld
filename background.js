@@ -25,8 +25,22 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       interval: intervalInSeconds, 
       isReloading: true, 
       nextReloadTime: nextReloadTime,
-      isHardRefresh: request.isHardRefresh || false
+      isHardRefresh: request.isHardRefresh || false,
+      stopOnClick: request.stopOnClick || false
     });
+
+    if (request.stopOnClick) {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs.length > 0) {
+          chrome.scripting.executeScript({
+            target: { tabId: tabs[0].id },
+            files: ['content.js']
+          }, () => {
+            chrome.tabs.sendMessage(tabs[0].id, { command: 'addClickListener' });
+          });
+        }
+      });
+    }
 
     // Set initial badge text and color
     chrome.action.setBadgeText({ text: formatBadgeText(intervalInSeconds) });
@@ -38,11 +52,57 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     sendResponse({ status: "Countdown started" });
 
   } else if (request.command === 'stop') {
-    // Stop the alarm and clear storage/badge
     chrome.alarms.clear('countdown');
-    chrome.storage.local.set({ isReloading: false, nextReloadTime: null });
     chrome.action.setBadgeText({ text: '' });
-    sendResponse({ status: "Countdown stopped" });
+
+    // This function will be our single point of exit for stopping the reloader.
+    const stopReloading = () => {
+      chrome.storage.local.set({ isReloading: false, nextReloadTime: null }, () => {
+        // The popup expects a response, but a content script click does not provide a sendResponse function.
+        if (sendResponse) {
+          sendResponse({ status: "Countdown stopped" });
+        }
+      });
+    };
+
+    chrome.storage.local.get('stopOnClick', (data) => {
+      // Only try to remove the listener if the feature was active.
+      if (data.stopOnClick) {
+        // Determine the target tab ID. If the sender has a tab, it's a content script.
+        // Otherwise, it's the popup, so we query for the active tab.
+        const getTabId = new Promise(resolve => {
+          if (sender.tab) {
+            resolve(sender.tab.id);
+          } else {
+            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+              resolve(tabs.length > 0 ? tabs[0].id : null);
+            });
+          }
+        });
+
+        getTabId.then(tabId => {
+          if (tabId) {
+            chrome.tabs.sendMessage(tabId, { command: 'removeClickListener' }, () => {
+              // This callback runs whether the message was received or not.
+              if (chrome.runtime.lastError) {
+                // This error is expected if the content script isn't on the page.
+              }
+              // Once messaging is attempted, proceed to stop the reloader.
+              stopReloading();
+            });
+          } else {
+            // If there's no tab to message, just stop.
+            stopReloading();
+          }
+        });
+      } else {
+        // If the feature wasn't active, just stop.
+        stopReloading();
+      }
+    });
+
+    // Return true to indicate we will respond asynchronously.
+    return true;
   }
 });
 
@@ -77,7 +137,22 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 // Optional: A listener to clear the badge if the user closes the tab
 // or navigates away, to prevent a stale countdown.
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    if (changeInfo.status === 'loading') {
+    if (changeInfo.status === 'complete') {
+        chrome.storage.local.get(['isReloading', 'stopOnClick'], (data) => {
+            if (data.isReloading && data.stopOnClick) {
+                chrome.scripting.executeScript({
+                    target: { tabId: tabId },
+                    files: ['content.js']
+                }, () => {
+                    if (chrome.runtime.lastError) {
+                        console.error('Could not inject script: ' + chrome.runtime.lastError.message);
+                        return;
+                    }
+                    chrome.tabs.sendMessage(tabId, { command: 'addClickListener' });
+                });
+            }
+        });
+    } else if (changeInfo.status === 'loading') {
         chrome.storage.local.get('isReloading', data => {
             if(!data.isReloading) {
                 chrome.action.setBadgeText({ text: '' });

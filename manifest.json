@@ -3,7 +3,7 @@
   "name": "RLD+",
   "version": "1.0",
   "description": "A simple extension to auto-reload the current tab at a specified interval.",
-  "permissions": ["activeTab", "storage", "alarms"],
+  "permissions": ["activeTab", "storage", "alarms", "scripting"],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {

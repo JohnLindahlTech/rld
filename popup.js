@@ -3,11 +3,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const minutesInput = document.getElementById('minutes');
   const secondsInput = document.getElementById('seconds');
   const hardRefreshCheckbox = document.getElementById('hard-refresh');
+  const stopOnClickCheckbox = document.getElementById('stop-on-click');
   const startButton = document.getElementById('start');
   const stopButton = document.getElementById('stop');
   const statusDiv = document.getElementById('status');
   const presetButtons = document.querySelectorAll('.preset-btn');
-  const inputs = [hoursInput, minutesInput, secondsInput, hardRefreshCheckbox];
+  const inputs = [hoursInput, minutesInput, secondsInput, hardRefreshCheckbox, stopOnClickCheckbox];
   let countdownInterval = null;
 
   // Formats seconds into HH:MM:SS string
@@ -49,9 +50,10 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // Load saved state when popup opens
-  chrome.storage.local.get(['isReloading', 'interval', 'isHardRefresh'], (result) => {
+  chrome.storage.local.get(['isReloading', 'interval', 'isHardRefresh', 'stopOnClick'], (result) => {
     setUiState(result.isReloading || false);
     hardRefreshCheckbox.checked = result.isHardRefresh || false;
+    stopOnClickCheckbox.checked = result.stopOnClick || false;
     if (result.interval && !result.isReloading) { // Only load interval if not active
       const hours = Math.floor(result.interval / 3600);
       const minutes = Math.floor((result.interval % 3600) / 60);
@@ -83,6 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const seconds = parseInt(secondsInput.value, 10) || 0;
     const totalSeconds = (hours * 3600) + (minutes * 60) + seconds;
     const isHardRefresh = hardRefreshCheckbox.checked;
+    const stopOnClick = stopOnClickCheckbox.checked;
 
     if (totalSeconds < 1) {
       statusDiv.textContent = 'Interval must be at least 1 second.';
@@ -92,7 +95,8 @@ document.addEventListener('DOMContentLoaded', () => {
     chrome.runtime.sendMessage({ 
       command: 'start', 
       interval: totalSeconds,
-      isHardRefresh: isHardRefresh 
+      isHardRefresh: isHardRefresh, 
+      stopOnClick: stopOnClick 
     }, 
       (response) => {
         if (response && response.status === "Countdown started") {
