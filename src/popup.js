@@ -42,15 +42,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- View Logic ---
   const showTimerView = () => {
-    manageView.style.display = "none";
-    timerView.style.display = "block";
+    manageView.classList.add("hidden");
+    timerView.classList.remove("hidden");
     isManageView = false;
     loadTimerViewData();
   };
 
   const showManageView = () => {
-    timerView.style.display = "none";
-    manageView.style.display = "block";
+    timerView.classList.add("hidden");
+    manageView.classList.remove("hidden");
     isManageView = true;
     buildManageView();
   };
