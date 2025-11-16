@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const startButton = document.getElementById('start');
   const stopButton = document.getElementById('stop');
   const statusDiv = document.getElementById('status');
+  const presetButtons = document.querySelectorAll('.preset-btn');
   const inputs = [hoursInput, minutesInput, secondsInput, hardRefreshCheckbox];
   let countdownInterval = null;
 
@@ -35,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Function to update the UI based on reloading state
   const setUiState = (isReloading) => {
     inputs.forEach(input => input.disabled = isReloading);
+    presetButtons.forEach(button => button.disabled = isReloading);
     startButton.disabled = isReloading;
     stopButton.disabled = !isReloading;
 
@@ -50,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
   chrome.storage.local.get(['isReloading', 'interval', 'isHardRefresh'], (result) => {
     setUiState(result.isReloading || false);
     hardRefreshCheckbox.checked = result.isHardRefresh || false;
-    if (result.interval) {
+    if (result.interval && !result.isReloading) { // Only load interval if not active
       const hours = Math.floor(result.interval / 3600);
       const minutes = Math.floor((result.interval % 3600) / 60);
       const seconds = result.interval % 60;
@@ -58,6 +60,20 @@ document.addEventListener('DOMContentLoaded', () => {
       minutesInput.value = minutes > 0 ? minutes : '';
       secondsInput.value = seconds > 0 ? seconds : '';
     }
+  });
+
+  // Preset button event listeners
+  presetButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const totalSeconds = parseInt(button.dataset.seconds, 10);
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+
+      hoursInput.value = hours > 0 ? hours : '';
+      minutesInput.value = minutes > 0 ? minutes : '';
+      secondsInput.value = seconds > 0 ? seconds : '';
+    });
   });
 
   // Start button event listener
