@@ -11,11 +11,15 @@ RLD+ is a simple yet powerful Chrome extension designed to automatically reload 
 
 ## How to Use
 
+![RLD+ Popup Interface](docs/assets/main_view.png)
+
 1.  Click on the RLD+ extension icon in your Chrome toolbar.
-2.  Enter the desired reload interval (in seconds) into the input field.
+2.  Set the desired reload interval using either the predefined buttons (10s, 1m, 5m, 10m) or by entering values into the Hours (H), Minutes (M), and Seconds (S) input fields.
 3.  Click the **Start** button.
 4.  The countdown will begin on the extension icon. The current tab will reload each time the countdown finishes.
-5.  To end the process, click the **Stop** button.
+5.  Optionally, check "Hard Refresh (bypass cache)" to force a full reload without using cached content.
+6.  Optionally, check "Stop refreshing if clicking anywhere on the page" to automatically halt the reloading process if you interact with the page.
+7.  To end the process, click the **Stop** button.
 
 ## Installation
 
