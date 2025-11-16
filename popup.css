@@ -1,76 +1,132 @@
+/* shadcn-inspired, dark/light mode UI */
+
+:root {
+  --background: #ffffff;
+  --foreground: #020817;
+  --card: #ffffff;
+  --card-foreground: #020817;
+  --popover: #ffffff;
+  --popover-foreground: #020817;
+  --primary: #1a1a1a;
+  --primary-foreground: #f8f8f8;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #f1f5f9;
+  --accent-foreground: #0f172a;
+  --destructive: #ef4444;
+  --destructive-foreground: #f8fafc;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #94a3b8;
+  --radius: 0.5rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #020817;
+    --foreground: #f8fafc;
+    --card: #020817;
+    --card-foreground: #f8fafc;
+    --popover: #020817;
+    --popover-foreground: #f8fafc;
+    --primary: #f8fafc;
+    --primary-foreground: #09090b;
+    --secondary: #1e293b;
+    --secondary-foreground: #f8fafc;
+    --muted: #1e293b;
+    --muted-foreground: #94a3b8;
+    --accent: #1e293b;
+    --accent-foreground: #f8fafc;
+    --destructive: #7f1d1d;
+    --destructive-foreground: #f8fafc;
+    --border: #1e293b;
+    --input: #1e293b;
+    --ring: #334155;
+  }
+}
+
 /* General Body Styles */
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   width: 280px;
-  padding: 15px;
-  background-color: #f4f4f9;
-  color: #333;
+  padding: 16px;
+  background-color: var(--background);
+  color: var(--foreground);
 }
 
 .container {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  gap: 16px;
 }
 
 h1 {
-  font-size: 1.5em;
-  margin: 0 0 5px 0;
-  color: #4688F1;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+  text-align: center;
 }
 
 p {
-  margin: 0 0 10px 0;
-  font-size: 0.9em;
-  color: #555;
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+  text-align: center;
 }
 
 /* Preset Buttons */
 .presets {
-  display: flex;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: 8px;
-  margin-bottom: 15px;
-  width: 100%;
 }
 
 .preset-btn {
-  padding: 5px 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background-color: #fff;
-  color: #333;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background-color: var(--secondary);
+  color: var(--secondary-foreground);
   cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  font-size: 0.875rem;
+  transition: background-color 0.2s ease;
 }
 
 .preset-btn:hover {
-  background-color: #e9e9e9;
-  border-color: #aaa;
+  background-color: var(--accent);
 }
 
 /* Time Input Section */
 .time-inputs {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 15px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
 }
 
 .input-group {
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 4px;
 }
 
 .input-group input {
-  width: 50px;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  width: 100%;
+  padding: 12px 8px;
+  border: 1px solid var(--input);
+  border-radius: var(--radius);
+  background-color: var(--background);
+  color: var(--foreground);
   text-align: center;
-  font-size: 1.2em;
-  -moz-appearance: textfield; /* Firefox */
+  font-size: 1.125rem;
+  -moz-appearance: textfield;
+}
+
+.input-group input:focus {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
 }
 
 .input-group input::-webkit-outer-spin-button,
@@ -80,69 +136,79 @@ p {
 }
 
 .input-group label {
-  margin-top: 5px;
-  font-size: 0.8em;
-  color: #777;
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
   text-transform: uppercase;
 }
 
 /* Options section */
 .options {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 20px;
-  width: 100%;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.options label {
-  margin-left: 8px;
-  font-size: 0.9em;
-  color: #555;
+.option-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
+
+.option-item label {
+  font-size: 0.875rem;
+  color: var(--foreground);
+  cursor: pointer;
+}
+
+.option-item input[type="checkbox"] {
+  accent-color: var(--primary);
+  width: 16px;
+  height: 16px;
+}
+
 
 /* Button Group */
 .button-group {
-  display: flex;
-  gap: 10px;
-  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
 }
 
 .btn {
-  flex-grow: 1;
   padding: 10px;
   border: none;
-  border-radius: 5px;
-  font-size: 1em;
-  font-weight: bold;
-  color: white;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
 .btn-start {
-  background-color: #4CAF50; /* Green */
+  background-color: var(--primary);
+  color: var(--primary-foreground);
 }
 
 .btn-start:hover {
-  background-color: #45a049;
+  opacity: 0.9;
 }
 
 .btn-stop {
-  background-color: #f44336; /* Red */
+  background-color: var(--secondary);
+  color: var(--secondary-foreground);
+  border: 1px solid var(--border);
 }
 
 .btn-stop:hover {
-  background-color: #da190b;
+  background-color: var(--accent);
 }
 
-/* Status Message & Countdown Timer */
+/* Status Message */
 #status {
-  margin-top: 15px;
-  padding: 5px 10px;
+  margin-top: 8px;
   font-family: 'Courier New', Courier, monospace;
-  font-size: 1.8em;
-  color: #4688F1;
+  font-size: 1.5rem;
+  color: var(--muted-foreground);
   min-height: 1.2em;
   text-align: center;
   font-weight: bold;
