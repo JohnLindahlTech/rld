@@ -2,10 +2,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const hoursInput = document.getElementById('hours');
   const minutesInput = document.getElementById('minutes');
   const secondsInput = document.getElementById('seconds');
+  const hardRefreshCheckbox = document.getElementById('hard-refresh');
   const startButton = document.getElementById('start');
   const stopButton = document.getElementById('stop');
   const statusDiv = document.getElementById('status');
-  const inputs = [hoursInput, minutesInput, secondsInput];
+  const inputs = [hoursInput, minutesInput, secondsInput, hardRefreshCheckbox];
   let countdownInterval = null;
 
   // Formats seconds into HH:MM:SS string
@@ -46,8 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // Load saved state when popup opens
-  chrome.storage.local.get(['isReloading', 'interval'], (result) => {
+  chrome.storage.local.get(['isReloading', 'interval', 'isHardRefresh'], (result) => {
     setUiState(result.isReloading || false);
+    hardRefreshCheckbox.checked = result.isHardRefresh || false;
     if (result.interval) {
       const hours = Math.floor(result.interval / 3600);
       const minutes = Math.floor((result.interval % 3600) / 60);
@@ -64,13 +66,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const minutes = parseInt(minutesInput.value, 10) || 0;
     const seconds = parseInt(secondsInput.value, 10) || 0;
     const totalSeconds = (hours * 3600) + (minutes * 60) + seconds;
+    const isHardRefresh = hardRefreshCheckbox.checked;
 
     if (totalSeconds < 1) {
       statusDiv.textContent = 'Interval must be at least 1 second.';
       return;
     }
 
-    chrome.runtime.sendMessage({ command: 'start', interval: totalSeconds }, 
+    chrome.runtime.sendMessage({ 
+      command: 'start', 
+      interval: totalSeconds,
+      isHardRefresh: isHardRefresh 
+    }, 
       (response) => {
         if (response && response.status === "Countdown started") {
           setUiState(true);

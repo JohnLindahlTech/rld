@@ -30,7 +30,7 @@ p {
   display: flex;
   justify-content: center;
   gap: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 .input-group {
@@ -60,6 +60,21 @@ p {
   font-size: 0.8em;
   color: #777;
   text-transform: uppercase;
+}
+
+/* Options section */
+.options {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.options label {
+  margin-left: 8px;
+  font-size: 0.9em;
+  color: #555;
 }
 
 /* Button Group */

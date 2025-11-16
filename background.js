@@ -20,11 +20,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     const intervalInSeconds = request.interval;
     const nextReloadTime = Date.now() + intervalInSeconds * 1000;
 
-    // Store interval and next reload time
+    // Store interval, reload time, and hard refresh preference
     chrome.storage.local.set({ 
       interval: intervalInSeconds, 
       isReloading: true, 
-      nextReloadTime: nextReloadTime 
+      nextReloadTime: nextReloadTime,
+      isHardRefresh: request.isHardRefresh || false
     });
 
     // Set initial badge text and color
@@ -48,7 +49,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 // Listener for the alarm
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === 'countdown') {
-    chrome.storage.local.get(['nextReloadTime', 'interval', 'isReloading'], (data) => {
+    chrome.storage.local.get(['nextReloadTime', 'interval', 'isReloading', 'isHardRefresh'], (data) => {
       if (data.isReloading && data.nextReloadTime) {
         const remaining = Math.round((data.nextReloadTime - Date.now()) / 1000);
 
@@ -59,7 +60,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
           // Time is up, reload the tab
           chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             if (tabs.length > 0) {
-              chrome.tabs.reload(tabs[0].id);
+              chrome.tabs.reload(tabs[0].id, { bypassCache: data.isHardRefresh || false });
             }
           });
 
