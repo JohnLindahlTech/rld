@@ -1,6 +1,19 @@
 
 // background.js
 
+// Formats remaining seconds into a compact string for the badge
+function formatBadgeText(seconds) {
+  if (seconds >= 3600) {
+    const hours = Math.floor(seconds / 3600);
+    return `${hours}h`;
+  }
+  if (seconds >= 60) {
+    const minutes = Math.floor(seconds / 60);
+    return `${minutes}m`;
+  }
+  return String(seconds);
+}
+
 // Listener for messages from the popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.command === 'start') {
@@ -15,7 +28,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     });
 
     // Set initial badge text and color
-    chrome.action.setBadgeText({ text: String(intervalInSeconds) });
+    chrome.action.setBadgeText({ text: formatBadgeText(intervalInSeconds) });
     chrome.action.setBadgeBackgroundColor({ color: '#4688F1' }); // Blue
 
     // Create an alarm that fires every second to update the countdown
@@ -40,8 +53,8 @@ chrome.alarms.onAlarm.addListener((alarm) => {
         const remaining = Math.round((data.nextReloadTime - Date.now()) / 1000);
 
         if (remaining > 0) {
-          // Update badge with remaining time
-          chrome.action.setBadgeText({ text: String(remaining) });
+          // Update badge with formatted remaining time
+          chrome.action.setBadgeText({ text: formatBadgeText(remaining) });
         } else {
           // Time is up, reload the tab
           chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -53,7 +66,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
           // Reset for the next countdown cycle
           const newNextReloadTime = Date.now() + data.interval * 1000;
           chrome.storage.local.set({ nextReloadTime: newNextReloadTime });
-          chrome.action.setBadgeText({ text: String(data.interval) });
+          chrome.action.setBadgeText({ text: formatBadgeText(data.interval) });
         }
       }
     });

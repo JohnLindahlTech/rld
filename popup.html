@@ -1,21 +1,33 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Auto Reloader</title>
+    <title>RLD+</title>
     <link rel="stylesheet" type="text/css" href="popup.css" />
   </head>
   <body>
-    <h1>Auto Reloader</h1>
-    <div class="input-group">
-      <label for="interval">Reload every:</label>
-      <input type="number" id="interval" value="10" min="1" />
-      <span>seconds</span>
+    <div class="container">
+      <h1>RLD+</h1>
+      <p>Set reload interval:</p>
+      <div class="time-inputs">
+        <div class="input-group">
+          <input type="number" id="hours" min="0" placeholder="0" />
+          <label for="hours">h</label>
+        </div>
+        <div class="input-group">
+          <input type="number" id="minutes" min="0" max="59" placeholder="0" />
+          <label for="minutes">m</label>
+        </div>
+        <div class="input-group">
+          <input type="number" id="seconds" min="0" max="59" placeholder="10" />
+          <label for="seconds">s</label>
+        </div>
+      </div>
+      <div class="button-group">
+        <button id="start" class="btn btn-start">Start</button>
+        <button id="stop" class="btn btn-stop">Stop</button>
+      </div>
+      <div id="status"></div>
     </div>
-    <div class="button-group">
-      <button id="start">Start</button>
-      <button id="stop">Stop</button>
-    </div>
-    <div id="countdown"></div>
     <script src="popup.js"></script>
   </body>
 </html>
