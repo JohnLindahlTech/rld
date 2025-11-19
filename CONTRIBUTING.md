@@ -13,6 +13,13 @@ Thank you for your interest in contributing to RLD+! We welcome contributions fr
     - Ensure proper indentation and formatting (Prettier is recommended).
     - Avoid global variables where possible; use modules or closures.
 
+4.  **Testing:**
+    - Run `npm test` before submitting your changes to ensure all tests pass.
+    - If you add new utility functions or core logic, write corresponding tests in the `tests/` directory.
+    - Follow the existing test structure using Vitest.
+    - Aim for clear, descriptive test names that explain what is being tested.
+
+
 ## Documentation & Versioning
 
 We strictly adhere to **Semantic Versioning** (MAJOR.MINOR.PATCH).

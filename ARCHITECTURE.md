@@ -76,3 +76,41 @@ The `timers` object in `chrome.storage.local` maps `tabId` to a timer configurat
   }
 }
 ```
+
+## Testing
+
+The extension uses **Vitest** for unit testing. Tests are located in the `tests/` directory.
+
+### Test Coverage
+
+- **`tests/utils.test.js`** - Time formatting, badge text formatting, and time calculations
+- **`tests/storage.test.js`** - Storage schema validation and random interval logic
+- **`tests/position.test.js`** - Visual countdown position calculations and rotation
+
+### Running Tests
+
+```bash
+npm test              # Run all tests
+npm test -- --run     # Run tests once (no watch mode)
+```
+
+### Writing Tests
+
+When adding new utility functions or core logic:
+
+1. Create a new test file in `tests/` or add to an existing one
+2. Follow the existing structure using Vitest's `describe`, `test`, and `expect`
+3. Use descriptive test names that explain the expected behavior
+4. Test edge cases and boundary conditions
+
+Example:
+
+```javascript
+import { describe, test, expect } from 'vitest';
+
+describe('My Feature', () => {
+  test('handles normal case', () => {
+    expect(myFunction(10)).toBe(20);
+  });
+});
+```
