@@ -97,8 +97,12 @@ fi
 
 
 # --- Packaging ---
-# Define the output filename, placing it in the project root
-FILENAME="../rld-plus-v${NEW_VERSION}.zip"
+# Define the build directory and output filename
+BUILD_DIR="build"
+FILENAME="${BUILD_DIR}/rld-plus-v${NEW_VERSION}.zip"
+
+# Create the build directory if it doesn't exist
+mkdir -p "${BUILD_DIR}"
 
 # Navigate into the src directory to create the zip file with correct paths
 echo "Navigating to ${SRC_DIR} to package extension..."
@@ -106,12 +110,10 @@ cd "${SRC_DIR}"
 
 # Create the zip file, including all files in the current directory
 echo "Packaging extension version ${NEW_VERSION} into ${FILENAME}..."
-zip -r "${FILENAME}" . -x "*.DS_Store"
+zip -r "../${FILENAME}" . -x "*.DS_Store"
 
 # Navigate back to the original directory
 cd ..
 
-echo "Successfully created ${FILENAME} in the project root."
+echo "Successfully created ${FILENAME}."
 echo "You can now upload this file to the Chrome Web Store."
-
-
