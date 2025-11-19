@@ -1,0 +1,19 @@
+RLD+ is a simple yet powerful Chrome extension designed to automatically reload any website at a specified interval. It offers second-level granularity, giving you precise control over your refresh rates.
+
+Now with multi-tab support – reload multiple tabs simultaneously, each with independent timers and settings!
+
+Key Features:
+
+* Multi-Tab Support: Set up independent reload timers for multiple tabs at once. Each tab maintains its own interval, hard refresh setting, and stop-on-click behavior.
+* Scroll Position Preservation: Automatically saves and restores your scroll position after each reload, so you never lose your place.
+* On-page Visual Countdown: A floating, rotating overlay shows the time remaining until the next reload. Click it to move it to any corner.
+* Random Interval Mode: Set a minimum and maximum interval for unpredictable reload times.
+* Keyboard Shortcuts: Use Alt+Shift+R (or Option+Shift+R on Mac) to quickly start/stop the timer for the active tab.
+* Custom Reload Intervals: Set any reload interval in seconds.
+* Visual Countdown: The extension icon displays a live countdown timer, so you always know when the next reload will occur.
+* Management View: View and control all active timers across tabs in one place. Access it by clicking the list icon in the popup header.
+* Tab Control Buttons: In the management view, you can:
+   ** Open Tab: Switch to any tab with an active timer
+   ** Start/Stop Timers: Play or pause timers for specific tabs
+   ** Remove Timers: Delete timer configurations for tabs you no longer need
+* Modern UI & Dark Mode: A completely redesigned, easy-to-use popup interface that automatically adapts to your system's dark or light mode preference.

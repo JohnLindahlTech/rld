@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2025-11-19
+
+### Added
+
+- **Scroll Position Preservation**: Automatically saves and restores your scroll position after each reload.
+- **On-page Visual Countdown**: A floating, rotating overlay that shows the time remaining until the next reload.
+  - Always enabled by default.
+  - Click the overlay to move it to a different corner (position is saved across reloads).
+  - Does not interfere with "Stop on click" functionality.
+- **Modern UI & Dark Mode**: A completely redesigned popup interface that automatically adapts to your system's dark/light mode.
+- **Random Interval Mode**: Set a minimum and maximum interval to reload at random times within that range.
+- **Keyboard Shortcuts**: Use `Alt+Shift+R` (or `Option+Shift+R` on Mac) to quickly start/stop the timer for the active tab.
+
 ## [2.0.0] - 2025-11-17
 
 ### Added

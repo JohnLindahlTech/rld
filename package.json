@@ -1,0 +1,30 @@
+{
+  "name": "rld",
+  "version": "1.0.0",
+  "description": "RLD+ is a simple yet powerful Chrome extension designed to automatically reload any website at a specified interval. It offers second-level granularity, giving you precise control over your refresh rates. **Now with multi-tab support** – reload multiple tabs simultaneously, each with independent timers and settings!",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "vitest",
+    "format": "prettier --write ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JohnLindahlTech/rld.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/JohnLindahlTech/rld/issues"
+  },
+  "homepage": "https://github.com/JohnLindahlTech/rld#readme",
+  "devDependencies": {
+    "prettier": "^3.6.2",
+    "puppeteer": "^24.30.0",
+    "vitest": "^4.0.10"
+  }
+}

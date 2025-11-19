@@ -33,3 +33,5 @@ Thumbs.db
 dist/
 build/
 rld-plus*.zip
+
+node_modules/

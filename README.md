@@ -12,6 +12,10 @@ RLD+ is a simple yet powerful Chrome extension designed to automatically reload 
   - **Open Tab:** Switch to any tab with an active timer
   - **Start/Stop Timers:** Play or pause timers for specific tabs
   - **Remove Timers:** Delete timer configurations for tabs you no longer need
+- **Scroll Position Preservation:** Automatically saves and restores your scroll position after each reload.
+- **On-page Visual Countdown:** A floating overlay shows the time remaining. Click it to move it to any corner.
+- **Random Interval Mode:** Set a minimum and maximum interval for unpredictable reload times.
+- **Keyboard Shortcuts:** Use `Alt+Shift+R` to quickly start/stop the timer.
 - **Simple Interface:** An easy-to-use popup to start and stop the reloading process.
 - **Dark/Light Mode Support:** Automatically adapts to your system's dark or light mode preference for a seamless visual experience.
 
@@ -25,11 +29,16 @@ RLD+ is a simple yet powerful Chrome extension designed to automatically reload 
 
 1.  Click on the RLD+ extension icon in your Chrome toolbar.
 2.  Set the desired reload interval using either the predefined buttons (10s, 1m, 5m, 10m) or by entering values into the Hours (H), Minutes (M), and Seconds (S) input fields.
+    - **Random Interval:** Check the "Random Interval" box to set a Minimum and Maximum time (in seconds). The extension will pick a random time within this range for each reload.
 3.  Click the **Start** button.
 4.  The countdown will begin on the extension icon. The current tab will reload each time the countdown finishes.
 5.  Optionally, check "Hard Refresh (bypass cache)" to force a full reload without using cached content.
 6.  Optionally, check "Stop refreshing if clicking anywhere on the page" to automatically halt the reloading process if you interact with the page.
 7.  To end the process, click the **Stop** button.
+
+### Keyboard Shortcuts
+
+- **Start/Stop Timer:** Press `Alt+Shift+R` (or `Option+Shift+R` on Mac) to toggle the timer for the current tab without opening the popup.
 
 ### Management View
 
@@ -62,7 +71,6 @@ To package the extension for the Chrome Web Store, follow these steps:
 1.  **Update Version:** Before creating a new release, manually update the `version` field in `src/manifest.json` to a new, unique version number. The Chrome Web Store requires a higher version for each upload.
 
 2.  **Run Deploy Script:** Run the `deploy.sh` script from the project root. You can use flags to control how the version is incremented.
-
     - `./deploy.sh`: (Default) Increments the patch version (e.g., 1.0.0 -> 1.0.1).
     - `./deploy.sh --minor`: Increments the minor version (e.g., 1.0.1 -> 1.1.0).
     - `./deploy.sh --major`: Increments the major version (e.g., 1.1.0 -> 2.0.0).
@@ -70,3 +78,20 @@ To package the extension for the Chrome Web Store, follow these steps:
     - `./deploy.sh --no-version`: Packages without changing the version.
 
 3.  **Upload to Store:** The script will generate a `rld-plus-v<version>.zip` file in the project root. Upload this file to the Chrome Web Store Developer Dashboard.
+
+## Contributing
+
+We welcome contributions from both human developers and AI agents! Please read our [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on:
+
+- Development workflow and code style
+- Documentation requirements (CHANGELOG, README, ARCHITECTURE)
+- Release process
+- Best practices for AI agents working with this codebase
+
+## Architecture
+
+For developers and AI agents who want to understand the extension's internal structure, see [ARCHITECTURE.md](ARCHITECTURE.md) for:
+
+- Core component overview (Background Script, Popup, Content Script)
+- Data flow diagrams
+- Storage schema documentation

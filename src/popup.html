@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <title>RLD+</title>
@@ -8,11 +8,11 @@
     <div class="container">
       <div class="header">
         <h1>RLD+</h1>
-        <button id="toggle-view" title="Manage all timers">
+        <button id="toggle-view" class="icon-btn" title="Manage all timers">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
+            width="20"
+            height="20"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -31,49 +31,60 @@
       </div>
 
       <div id="timer-view">
-        <p>Set reload interval for this tab:</p>
+        <p class="text-sm text-muted" style="margin-bottom: 8px">Set reload interval:</p>
         <div class="presets">
           <button class="preset-btn" data-seconds="10">10s</button>
           <button class="preset-btn" data-seconds="60">1m</button>
           <button class="preset-btn" data-seconds="300">5m</button>
           <button class="preset-btn" data-seconds="600">10m</button>
         </div>
-        <div class="time-inputs">
-          <div class="input-group">
-            <input type="number" id="hours" min="0" placeholder="0" />
-            <label for="hours">h</label>
+        <div class="time-inputs-container">
+          <!-- Fixed Interval Inputs -->
+          <div id="fixed-inputs" class="time-inputs">
+            <div class="input-group">
+              <input type="number" id="hours" min="0" placeholder="0" />
+              <label for="hours">h</label>
+            </div>
+            <div class="input-group">
+              <input type="number" id="minutes" min="0" max="59" placeholder="0" />
+              <label for="minutes">m</label>
+            </div>
+            <div class="input-group">
+              <input type="number" id="seconds" min="0" max="59" placeholder="10" />
+              <label for="seconds">s</label>
+            </div>
           </div>
-          <div class="input-group">
-            <input
-              type="number"
-              id="minutes"
-              min="0"
-              max="59"
-              placeholder="0"
-            />
-            <label for="minutes">m</label>
-          </div>
-          <div class="input-group">
-            <input
-              type="number"
-              id="seconds"
-              min="0"
-              max="59"
-              placeholder="10"
-            />
-            <label for="seconds">s</label>
+
+          <!-- Random Interval Inputs -->
+          <div id="random-inputs" class="time-inputs hidden">
+            <div class="input-group">
+              <input type="number" id="min-seconds" min="1" placeholder="5" />
+              <label for="min-seconds">Min (s)</label>
+            </div>
+            <div class="input-group">
+              <span style="font-weight: bold; color: var(--text-secondary); margin-top: 10px"
+                >-</span
+              >
+            </div>
+            <div class="input-group">
+              <input type="number" id="max-seconds" min="1" placeholder="30" />
+              <label for="max-seconds">Max (s)</label>
+            </div>
           </div>
         </div>
+
         <div class="options">
+          <div class="option-item">
+            <input type="checkbox" id="random-interval" />
+            <label for="random-interval">Random Interval</label>
+          </div>
           <div class="option-item">
             <input type="checkbox" id="hard-refresh" />
             <label for="hard-refresh">Hard Refresh (bypass cache)</label>
           </div>
           <div class="option-item">
             <input type="checkbox" id="stop-on-click" />
-            <label for="stop-on-click"
-              >Stop refreshing if clicking anywhere on the page</label
-            >
+            <label for="stop-on-click">Stop refreshing if clicking anywhere on the page</label>
           </div>
         </div>
         <div class="button-group">
@@ -84,7 +95,7 @@
       </div>
 
       <div id="manage-view" class="hidden">
-        <p>All timers:</p>
+        <p class="text-sm text-muted" style="margin-bottom: 8px">Active timers:</p>
         <div id="timers-list">
           <!-- Timer items will be dynamically inserted here -->
         </div>

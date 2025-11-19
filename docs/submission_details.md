@@ -42,10 +42,10 @@ The single purpose of this extension is to automatically reload the current brow
 
 The extension requests the following permissions, each of which is essential for its single purpose:
 
-*   **`activeTab`**: This permission is used to perform the reload action on the currently active tab and to get its URL for context.
-*   **`storage`**: This permission is used to save the user's settings (such as the reload interval, hard refresh preference, and other UI states) locally on their machine. This allows user preferences to persist between browser sessions.
-*   **`alarms`**: This is the core permission for the extension's functionality. The `alarms` API is used to create a reliable and battery-efficient timer that triggers the page reload at the specified interval.
-*   **`scripting`**: This permission is used to inject a content script into the active tab. This script is necessary for the "Stop refreshing if clicking anywhere on the page" feature, as it listens for user interaction on the page to stop the timer.
+- **`activeTab`**: This permission is used to perform the reload action on the currently active tab and to get its URL for context.
+- **`storage`**: This permission is used to save the user's settings (such as the reload interval, hard refresh preference, and other UI states) locally on their machine. This allows user preferences to persist between browser sessions.
+- **`alarms`**: This is the core permission for the extension's functionality. The `alarms` API is used to create a reliable and battery-efficient timer that triggers the page reload at the specified interval.
+- **`scripting`**: This permission is used to inject a content script into the active tab. This script is necessary for the "Stop refreshing if clicking anywhere on the page" feature, as it listens for user interaction on the page to stop the timer.
 
 ### 3. Remote Code Usage
 
@@ -60,22 +60,23 @@ All JavaScript, CSS, and HTML code required for the extension to function is inc
 **What user data do you plan to collect?**
 This extension **does not** collect any of the following types of user data:
 
-*   Personally identifiable information
-*   Health information
-*   Financial and payment information
-*   Authentication information
-*   Personal communications
-*   Location
-*   Web history
-*   User activity (beyond what is needed for the "stop on click" feature, which is processed locally and not collected or stored)
-*   Website content
+- Personally identifiable information
+- Health information
+- Financial and payment information
+- Authentication information
+- Personal communications
+- Location
+- Web history
+- User activity (beyond what is needed for the "stop on click" feature, which is processed locally and not collected or stored)
+- Website content
 
 The only data the extension handles is the user's own settings for the extension (e.g., the desired reload time), which is stored locally on the user's machine via the `chrome.storage` API and is never transmitted.
 
 **Data Usage Certifications:**
-*   [x] I do not sell or transfer user data to third parties, outside of the approved use cases.
-*   [x] I do not use or transfer user data for purposes that are unrelated to my item's single purpose.
-*   [x] I do not use or transfer user data to determine creditworthiness or for lending purposes.
+
+- [x] I do not sell or transfer user data to third parties, outside of the approved use cases.
+- [x] I do not use or transfer user data for purposes that are unrelated to my item's single purpose.
+- [x] I do not use or transfer user data to determine creditworthiness or for lending purposes.
 
 ### 5. Privacy Policy URL
 

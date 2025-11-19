@@ -1,0 +1,11 @@
+RLD+ is a simple yet powerful Chrome extension designed to automatically reload any website at a specified interval. It offers second-level granularity, giving you precise control over your refresh rates.
+
+Key Features:
+
+* Custom Reload Intervals: Set any reload interval in seconds, minutes, and hours.
+* Preset Timers: Quickly start a reload with common presets (10s, 1m, 5m, 10m).
+* Dark/Light Mode Support: Automatically adapts to your system's theme for a seamless visual experience.
+* Hard Refresh: Option to bypass the cache for a complete, fresh reload.
+* Stop on Interaction: Automatically stops the timer if you click anywhere on the page.
+* Visual Countdown: The extension icon displays a live countdown timer, so you always know when the next reload will occur.
+* Efficient: Uses Chrome's `alarms` API for reliable and battery-friendly timing.
